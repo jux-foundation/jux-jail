@@ -1,0 +1,105 @@
+#!/bin/bash
+
+set -e
+
+function get_repo_online {
+	yum reinstall -y --downloadonly --downloaddir=repo `cat list`
+}
+
+function get_repo_dvd {
+	mkdir repo
+	for i in `cat list`
+	do
+		package=`find iso | grep $i | cut -d'/' -f4 | grep ^$i-[1234567890]`
+		cp iso/Packages/*/$i repo
+	done
+}
+
+function makejail {
+	if [ ! -e list ]
+	then
+		echo "Run \`makelist\` first."
+		exit
+	fi
+
+	echo "
+Two sources for the required packages are available:
+
+  1. Online Fedora repositories (default) (Internet required, 50~80MB will be downloaded)
+       note: if you want to use local repositories, follow the steps required to add them
+             to yum repositories at /etc/yum.repos.d/
+
+  2. Use an already downloaded Fedora iso or mounted DVD (arch doesn't matter).
+
+  3. Use a single folder containing required packages.
+       note: if some packages are missing or outdated, we'll automatically download them
+             from Fedora repositories.
+	"
+
+	read -p "Which method? (1/2/3/q) (default: 1) " ask
+
+	if [[ ( $ask == 1 || -z $ask ]]
+	then
+		echo "Online method chosen ..."
+		method="online"
+	elif [[ $ask == 2 ]]
+	then
+		echo "DVD method chosen ..."
+		method="dvd"
+		read -p "Where is the DVD/iso mounted?" src
+		if [[ -d $src ]]
+		then
+			if [[ $src != "iso" ]]
+			then
+				ln -s $i iso
+			fi
+		else
+			echo "error: cannot access $src: No such directory"
+			exit
+		fi
+	elif [[ $ask == 3 ]]
+	then
+		echo "Local method chosen ..."
+		method="online"	# this is NOT a bug.
+		read -p "Where are the packages?" src
+		if [[ -d $src ]]
+		then
+			if [[ $src != "repo" ]]
+			then
+				ln -s $i repo
+			fi
+		else
+			echo "error: cannot access $src: No such directory"
+			exit
+		fi
+	elif [[ $ask == "q" ]]
+	then
+		exit
+	else
+		echo "error: couldn't detect your choice!"
+		echo
+		makejail $@
+		exit
+	fi
+
+
+	get_repo_$method
+
+	cd root
+
+	for i in `ls ../repo`
+	do
+		rpm2cpio ../repo/$i | cpio -idm
+	done
+
+	echo "Removing a couple of files that are useless for all intents and purposes of a jail ..."
+	rm -rf usr/lib/locale usr/share/{cracklib,doc,i18n,info,locale,man,zoneinfo}
+
+	echo "Starting to reset SELinux contexts of the chroot environment ..."
+	setfiles -p -r . /etc/selinux/targeted/contexts/files/file_contexts .
+
+	cd ..
+	echo "done"
+}
+
+makejail $@

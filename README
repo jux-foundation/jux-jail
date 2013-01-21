@@ -1,0 +1,30 @@
+
+ Jail Environment for Jux
+ 	This is a chroot environment for Jux.
+
+ Features
+ 	TO BE COMPLETED, asap!
+
+ Install & Configuration
+	Pretty much everything is available through make.
+	Enter `make` for a list of options
+
+ Documentation
+ 	TO BE COMPLETED, asap!
+
+ License
+	Copyright (C) 2011-`date +%Y`   Hamed Saleh & Mahrud Sayrafi
+
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 2 of the License, or
+	(at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+ Authors & Contact information
+ 	Hamed Saleh <hameelas@gmail.com.NOSPAM>
+	Mahrud Sayrafi <sayrafi.m@gmail.com.NOSPAM>

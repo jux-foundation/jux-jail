@@ -4,6 +4,8 @@
 # That stupid sh*t has some of the needed glibc libraries in it!
 # Can cause problems.
 
+set -e
+
 function makelist {
 	if [[ -z "$@" ]]
 	then
@@ -12,8 +14,9 @@ function makelist {
 		echo "	e.g: makelist fpc"
 		exit
 	fi
-	
-	$HASH=/tmp/.makelist_HASH
+
+	HASH="/tmp/.makelist_HASH"
+	touch $HASH
 
 	echo $@ | sed "s/ /\n/g" >> list
 	cat list | sort | uniq | sponge list

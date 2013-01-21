@@ -1,1 +1,3 @@
  * somehow only fetch the libraries not binaries, etc. (except for gcc, etc.)
+ * add command line arguments for makejail (specify root, method, source, etc.)
+ * add monitoring and checking scripts
